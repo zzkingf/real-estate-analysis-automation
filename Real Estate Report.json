@@ -1,0 +1,538 @@
+{
+  "name": "Real Estate Report",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f2d02452-8142-4576-ba10-d47583800c6d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8aeb0986-fc6c-4b4a-92d5-fbf0eae470e5",
+              "name": "ada",
+              "value": "={{ $json.ada }}",
+              "type": "string"
+            },
+            {
+              "id": "8537f5ca-8c02-4bbd-9e70-3ff730b13eb8",
+              "name": "parsel",
+              "value": "={{ $json.parsel }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        0
+      ],
+      "id": "d9ef6834-f2a9-4e7e-bcf1-8d9da791a317",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen kıdemli bir şehir plancısı ve gayrimenkul geliştirme uzmanısın. Aşağıdaki gerçek teknik verileri analiz ederek profesyonel bir “Stratejik Arsa Etüt Raporu” hazırla.\n\n1) TAŞINMAZ TEKNİK VERİLERİ\nKonum: {{ $('Code in JavaScript').item.json.Mahalle }} Mah.\nAda/Parsel: {{ $('Code in JavaScript').item.json.AdaNo }}/{{ $('Code in JavaScript').item.json.ParselNo }}\nAlan: {{ $('Code in JavaScript').item.json.ParselAlani }} m²\nEmsal (KAKS): {{ $('Code in JavaScript').item.json.Kaks }}\nKat Sınırı: {{ $('Code in JavaScript').item.json.KatAdedi }} Kat\nİmar Çekme Mesafeleri: Ön: {{ $('Code in JavaScript').item.json.OnCekme }}m, Yan: {{ $('Code in JavaScript').item.json.YanCekme }}m, Arka: {{ $('Code in JavaScript').item.json.ArkaCekme }}m\n2) ÇEVRE DONATI ANALİZİ (500 m)\nYakındaki donatılar (ilk 5): {{ $node[\"HTTP Request3\"].json.results.map(r => r.name).slice(0,5).join(\", \") }}\nPiyasa ve Demografi: SerpAPI ile '{{ $('Code in JavaScript').item.json.Mahalle }} satılık/kiralık konut m2 fiyatları' ve '{{ $('Code in JavaScript').item.json.Mahalle }} sosyo-ekonomik (SES) yapısı' araştırması yap. Bölgenin demografik profilini (yaş, gelir, tercih) raporun 'Hedef Kitle' kısmında yorumla.\n\nMimari Uygulanabilirlik (Ayağı Yere Basan Analiz):\n\nTaban Oturumu (TAKS): Çekme mesafeleri sonrası kalan alanın, 120 m²'lik daire planına uygunluğunu ve arsanın verimliliğini sorgula.\n\nOtopark: 14 daire için gereken otopark ihtiyacını ve bunun bodrum kat gereksinimini/maliyete etkisini analiz et.\n\nFinansal Fizibilite:\n\nNet Satılabilir Alan: Toplam alandan %15 ortak alan payı düş.\n\nHassasiyet Analizi (Stres Testi): İnşaat maliyetlerinin %20 artması veya satış fiyatlarının %10 düşmesi durumunda projenin kârlılığını (Amortisman Süresi değişimini) hesapla.\n3) GÖREVLER VE HESAPLAMALAR\n\nPiyasa Analizi: SerpAPI aracını kullanarak \"{{ $('Code in JavaScript').item.json.Mahalle }} mahallesi satılık konut m2 fiyatları\" ve \"{{ $('Code in JavaScript').item.json.Mahalle }} mahallesi kiralık daire m2 fiyatları\" sorgularını ayrı ayrı yap.\n\nTeknik Hesaplama (Adım Adım): (a) Toplam İnşaat Alanı: ParselAlani × Kaks. (b) Net Satılabilir Alan: Toplam inşaat alanından %15 teknik hacim/ortak alan payı düş. (c) Daire Adedi: Net satılabilir alanı ortalama 120 m²'lik (3+1 tipi) dairelere bölerek tahmini bağımsız bölüm sayısını bul.\n\nFinansal Değerlendirme: (d) Tahmini Proje Değeri: Net satılabilir alan × (SerpAPI'den bulunan satılık m² fiyatı). (e) Geri Dönüş (ROI) Analizi: SerpAPI'den bulduğun kira verilerini kullanarak bölgedeki kira çarpanını (Amortisman Süresi) hesapla. Projenin kaç yılda kendini geri döndüreceğini belirt.\n\nMekansal Yorum: Donatıların yatırım potansiyeline ve satış hızına etkisini madde madde değerlendir.\n\nÖNEMLİ KURALLAR\n\n'Bilinmiyor' yazma.\n\nm² fiyatını ve kira verisini mutlaka SerpAPI sonucundan al.\n\nHesaplamaların formüllerini raporda açıkça göster.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        704,
+        224
+      ],
+      "id": "d93bf543-3f58-41be-9c30-dfeacd6f9536",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        528
+      ],
+      "id": "0f26a023-f108-4c66-8aef-fc18bc80f40d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KQ2CB33ypn7pnTjM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1XVB_RMshqSCXl6hfYOUFTrep176_rZctqjMHF1fx3tg",
+          "mode": "list",
+          "cachedResultName": "Arsa Analiz Raporları",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XVB_RMshqSCXl6hfYOUFTrep176_rZctqjMHF1fx3tg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XVB_RMshqSCXl6hfYOUFTrep176_rZctqjMHF1fx3tg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Ada/Parsel": "={{ $('Code in JavaScript').item.json.AdaNo }}/{{ $('Code in JavaScript').item.json.ParselNo }}",
+            "AI Analizi": "={{ $json.tam_rapor }}",
+            "Proje Değeri": "={{ $json.proje_degeri }}",
+            "M2 Fiyatı": "={{ $json.m2_fiyat }}",
+            "İmar Durumu": "={{ $('Code in JavaScript').item.json.Kaks }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Ada/Parsel",
+              "displayName": "Ada/Parsel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "İmar Durumu",
+              "displayName": "İmar Durumu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "M2 Fiyatı",
+              "displayName": "M2 Fiyatı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Proje Değeri",
+              "displayName": "Proje Değeri",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Analizi",
+              "displayName": "AI Analizi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1232,
+        304
+      ],
+      "id": "cae5de58-f35b-4ddf-a249-2102be16d658",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "q2Z3nMuggcLODKV5",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://imardurumu.cankaya.bel.tr/",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        368,
+        0
+      ],
+      "id": "6f0d7e45-32e8-4076-bfc1-1421be1e1191",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://imardurumu.cankaya.bel.tr/Home/ParselleriGetir",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Referer",
+              "value": "https://imardurumu.cankaya.bel.tr/"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ada",
+              "value": "={{ $('Edit Fields').item.json.ada }}"
+            },
+            {
+              "name": "parsel",
+              "value": "={{ $('Edit Fields').item.json.parsel }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "41dafa5a-3770-4412-9701-cfd474ae78ea",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://imardurumu.cankaya.bel.tr/ImarBelgesi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "parsel_guid",
+              "value": "={{ $json.parsel_guid }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        64,
+        352
+      ],
+      "id": "e5a3b26f-3d93-4ae3-aa04-667e8b0a88ad",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// İlk HTTP Request'ten gelen HTML verisini alıyoruz\nconst htmlContent = $node[\"HTTP Request1\"].json[\"data\"]; \n\n// Regex ile ParselBelgeGetir(&#x27;...&#x27;) içindeki ID'yi buluyoruz\nconst regex = /ParselBelgeGetir\\(&#x27;([^&]+)&#x27;\\)/;\nconst match = htmlContent.match(regex);\n\n// Eğer eşleşme varsa ID'yi, yoksa null döndürüyoruz\nreturn {\n  parsel_guid: match ? match[1] : null\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        0
+      ],
+      "id": "62158031-5724-4123-aa3e-f38082ccc2cf",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "location",
+              "value": "39.884620, 32.819089"
+            },
+            {
+              "name": "radius",
+              "value": "500"
+            },
+            {
+              "name": "keyword",
+              "value": "metro|otobüs|hastane|eczane|okul"
+            },
+            {
+              "name": "key",
+              "value": "=AIzaSyC5RgWptw3jLijUEigNoa16X7nTxUfCVYs"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        352
+      ],
+      "id": "b4deb998-7fb1-44a1-962e-61d6e0c71f59",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        432
+      ],
+      "id": "3fcf1b01-dc3a-47f4-8399-e7204defc39c",
+      "name": "SerpAPI1",
+      "credentials": {
+        "serpApi": {
+          "id": "sIYFl2NUMYJY0H1B",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $node[\"HTTP Request2\"].json[\"data\"]; \n\nconst match = text.match(/var\\s+details\\s*=\\s*(\\[[\\s\\S]*?\\]);/);\nif (!match) {\n  throw new Error(\"details JSON bulunamadı.\");\n}\n\nconst detailsArray = JSON.parse(match[1]);\nconst d = detailsArray[0];\n\nreturn [\n  {\n    json: {\n      ParselGuid: d.ParselGuid,\n      AdaNo: d.AdaNo,\n      ParselNo: d.ParselNo,\n      ParselAlani: d.TapuAlan,\n      Kaks: d.Kaks,\n      FonksiyonAdi: d.FonksiyonAdi || d.Konut,\n      KatAdedi: d.KatAdedi,\n      Mahalle: d.TapuMahalleAd,\n      Ilce: d.TapuIlceAd,\n      Il: d.TapuIlAd,\n      // Çekme Mesafeleri: Sistemde varsa al, yoksa varsayılanı (5, 4, 4) ata\n      OnCekme: d.OnBahce ,\n      YanCekme: d.YanBahce ,\n      ArkaCekme: d.ArkaBahce || \"4\"\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        352
+      ],
+      "id": "10922440-4869-4a0f-b09a-b6165d6d6fbe",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent'ın ürettiği metni alıyoruz\nconst reportText = $node[\"AI Agent\"].json.output;\n\n// Regex ile m2 fiyatı ve proje değerini ayıklıyoruz\nconst m2FiyatMatch = reportText.match(/(\\d{1,3}(?:\\.\\d{3})*)\\s*TL\\/m²/);\nconst projeDegerMatch = reportText.match(/(\\d{1,3}(?:\\.\\d{3})*(?:,\\d+)?)\\s*TL(?!\\/m²)/g);\nconst sonTlDegeri = projeDegerMatch ? projeDegerMatch[projeDegerMatch.length - 1] : \"Hesaplanamadı\";\n\nreturn {\n  // Ada ve Parsel bilgisini ana veri düğümünden alıyoruz\n  ada_parsel: $node[\"Code in JavaScript\"].json.AdaNo + \"/\" + $node[\"Code in JavaScript\"].json.ParselNo,\n  imar_durumu: $node[\"Code in JavaScript\"].json.Kaks, // Emsal bilgisini buraya yazıyoruz\n  m2_fiyat: m2FiyatMatch ? m2FiyatMatch[1] : \"Bulunamadı\",\n  proje_degeri: sonTlDegeri,\n  tam_rapor: reportText\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        112
+      ],
+      "id": "8b26c33f-f6ad-4811-baf6-7205d56b28c8",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "ilce": "Çankaya",
+          "ada": "27883",
+          "parsel": "6",
+          "arsa_alani": 650,
+          "imar_durumu": "Konut + Ticaret",
+          "emsal": 2,
+          "birim_m2_fiyati": 120000
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0cb59cab-38bd-400d-ba3e-235f63780168",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3708ccb76eebc0bd80f0d3f2c00cd914447fca5cfd270856f330d1efe56d6a1a"
+  },
+  "id": "UalSQjQgAj7KV8-F_Rlsg",
+  "tags": []
+}
